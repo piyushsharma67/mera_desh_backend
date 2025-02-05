@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	_ "github.com/lib/pq" 
-	"social_web_server/db"
+	configPkg "social_web_server/config"
+
+	_ "github.com/lib/pq"
 	"github.com/pressly/goose"
 	"github.com/spf13/cobra"
 )
@@ -23,10 +24,15 @@ func init() {
 	AddCommand(migrateCMD)
 }
 
+
 func runMigrations() {
-	dsn := db.GetDSN() // Get DSN from config
+	fmt.Println(env)
 	// Connect to PostgreSQL using the standard sql package
-	dbConn, err := sql.Open("postgres", dsn)
+	config,err:=configPkg.Loadconfig(env)
+	if err!=nil{
+		log.Fatal(err)
+	}
+	dbConn, err := sql.Open("postgres", config.GetDSN())
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}

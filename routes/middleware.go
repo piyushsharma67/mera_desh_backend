@@ -11,7 +11,7 @@ type MiddlewareBody struct{
 	Handlerfunc http.Handler
 }
 
-func Protected(next http.Handler)http.Handler{
+func Protected(next http.HandlerFunc)http.HandlerFunc{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token:= r.Header.Get("Authorization")
 
@@ -23,8 +23,6 @@ func Protected(next http.Handler)http.Handler{
 		}
 
 		ctx:=context.WithValue(r.Context(),"userid",claims.UserID)
-
-		next.ServeHTTP(w,r.WithContext(ctx))
-
+		next(w,r.WithContext(ctx))
 	})
 }

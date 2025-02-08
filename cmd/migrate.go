@@ -26,7 +26,6 @@ func init() {
 
 
 func runMigrations() {
-	fmt.Println(env)
 	// Connect to PostgreSQL using the standard sql package
 	config,err:=configPkg.Loadconfig(env)
 	if err!=nil{

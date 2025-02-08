@@ -12,36 +12,38 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-
-func SignupUser(w http.ResponseWriter,r *http.Request){
-	if r.Method!=http.MethodPost{
-		utils.ErrorResponse(w,r,http.StatusBadRequest,"Bad Request")
+func SignupUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
 		return
 	}
 
 	var user models.User
 
-	if err:=json.NewDecoder(r.Body).Decode(&user);err!=nil{
-		utils.ErrorResponse(w,r,http.StatusInternalServerError,"Internal Server Error")
-		return 
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		utils.ErrorResponse(w, r, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
-	validate:=validator.New()
+	validate := validator.New()
 
 	if err := validate.Struct(user); err != nil {
-		utils.ErrorResponse(w,r,http.StatusBadRequest,err.Error())
-		return 
+		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
 	}
 
-	ctx,cancel:=context.WithTimeout(context.Background(),3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
 	defer cancel()
 
-	if err:= services.SaveUserInDb(ctx,&user);err!=nil{
-		utils.ErrorResponse(w,r,http.StatusInternalServerError,err.Error())
-		return 
+	userServiceInstance := &services.UserService{}
+
+	db_user, err := userServiceInstance.GetUserWithEmail(ctx, user.Email)
+	if err != nil {
+		utils.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
 	}
 
-	
+	utils.SuccessResponse(w, db_user)
 
+	return
 }

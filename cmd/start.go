@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	configPkg "social_web_server/config"
-	"social_web_server/db"
+	"social_web_server/database"
 	"social_web_server/routes"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -26,8 +26,14 @@ var startCMD = &cobra.Command{
 		if err!=nil{
 			log.Fatal(err.Error())
 		}
-		conn, err := pgxpool.New(context.Background(), config.GetDSN())
-		db.New(conn)
+		pgxpool, err := pgxpool.New(context.Background(), config.GetDSN())
+
+		if err!=nil{
+			log.Fatal(err.Error())
+		}
+
+		database.Initialize(pgxpool)
+		
 		r:=routes.InitRoutes()
 
 		addr := fmt.Sprintf(":%s", port)

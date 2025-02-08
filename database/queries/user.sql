@@ -1,4 +1,4 @@
--- db/queries/user.sql
+-- database/queries/user.sql
 
 -- Create user 
 -- name: CreateUser :exec

@@ -3,7 +3,7 @@
 //   sqlc v1.28.0
 // source: user.sql
 
-package db
+package database
 
 import (
 	"context"
@@ -22,7 +22,7 @@ type CreateUserParams struct {
 	Password string
 }
 
-// db/queries/user.sql
+// database/queries/user.sql
 // Create user
 // params: CreateUserParams
 // returns: User

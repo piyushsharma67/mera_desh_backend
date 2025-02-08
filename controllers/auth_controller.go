@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"social_web_server/models"
 	"social_web_server/services"
@@ -39,11 +41,41 @@ func SignupUser(w http.ResponseWriter, r *http.Request) {
 	userServiceInstance := &services.UserService{}
 
 	db_user, err := userServiceInstance.GetUserWithEmail(ctx, user.Email)
-	if err != nil {
-		utils.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+
+	if db_user.Email != "" {
+		utils.ErrorResponse(w, r, http.StatusInternalServerError, "user with the email already exists")
+		return
 	}
 
-	utils.SuccessResponse(w, db_user)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		utils.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	dbUser, err := userServiceInstance.InserUser(ctx, user)
+
+	if err != nil {
+		utils.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user.Password = ""
+	user.ID = dbUser.ID
+
+	token, err := utils.EncodeToken(string(dbUser.ID))
+	user.Token = token
+
+	if err != nil {
+		utils.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.SuccessResponse(w, user)
 
 	return
+}
+
+
+func SigninUser(w http.ResponseWriter,r *http.Request){
+	
 }

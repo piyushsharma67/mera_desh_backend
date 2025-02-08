@@ -12,20 +12,23 @@ import (
 )
 
 var migrateCMD = &cobra.Command{
-	Use:   "migrate",
-	Short: "run the migrtations",
-	Long:  "Run the migration files",
+	Use:   "migrate [direction]",
+	Short: "Run database migrations",
+	Long:  "Run database migrations either up or down",
+	Args:  cobra.ExactArgs(1), // Ensure we get exactly one argument (up/down)
 	Run: func(cmd *cobra.Command, args []string) {
-		runMigrations()
+		direction := args[0]
+		runMigrations(direction)
 	},
 }
+
 
 func init() {
 	AddCommand(migrateCMD)
 }
 
 
-func runMigrations() {
+func runMigrations(direction string) {
 	// Connect to PostgreSQL using the standard sql package
 	config,err:=configPkg.Loadconfig(env)
 	if err!=nil{
@@ -44,8 +47,19 @@ func runMigrations() {
 	}
 
 	// Apply migrations from the "db/migrations" directory
-	migrationsDir := "db/migrations"
-	err = goose.Up(dbConn, migrationsDir)
+	migrationsDir := "database/migrations"
+	switch direction {
+	case "up":
+		err = goose.Up(dbConn, migrationsDir)
+	case "down":
+		err = goose.Down(dbConn, migrationsDir)
+	case "redo":
+		err = goose.Redo(dbConn, migrationsDir)
+	case "status":
+		err = goose.Status(dbConn, migrationsDir)
+	default:
+		log.Fatalf("Invalid migration direction: %s. Use 'up', 'down', or 'redo'.", direction)
+	}
 	if err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}

@@ -12,7 +12,5 @@ type User struct {
 }
 
 type UserFcm struct {
-	ID        int32   `json:"id"`
 	FcmToken string `json:"fcm_token"`
-	CreatedAt time.Time `json:"created_at"`
 }

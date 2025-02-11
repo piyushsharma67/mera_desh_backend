@@ -13,3 +13,11 @@ func (r *RepositoryStruct)GetUserByEmail(ctx context.Context,email string)(datab
 func (r*RepositoryStruct)InsertUserInDB(ctx context.Context,details database.CreateUserParams)error{
 	return r.db.CreateUser(ctx,details)
 }
+
+func (r *RepositoryStruct)GetUserFcmById(ctx context.Context,userId int32)(database.UserFcmToken,error){
+	return r.db.GetUserFcmTokenByUserID(ctx,userId)
+}
+
+func (r *RepositoryStruct)InsertUserFcmById(ctx context.Context,details database.CreateUserFcmTokenParams)(database.UserFcmToken,error){
+	return r.db.CreateUserFcmToken(ctx,details)
+}

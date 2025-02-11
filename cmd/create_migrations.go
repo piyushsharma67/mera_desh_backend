@@ -14,7 +14,7 @@ var migrateCreateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get the name of the migration file
 		name := args[0]
-		dir := "db/migrations" // Migration directory
+		dir := "database/migrations" // Migration directory
 
 		// Create the migration file using Goose
 		err := goose.Create(nil, dir, name, "sql")

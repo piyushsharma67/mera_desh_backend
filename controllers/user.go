@@ -31,7 +31,7 @@ func (c *ControllerStruct) SignupUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	ctx, cancel := context.WithTimeout(context.Background(), utils.ApiTimeoutTime)
 
 	defer cancel()
 
@@ -44,4 +44,15 @@ func (c *ControllerStruct) SignupUser(w http.ResponseWriter, r *http.Request) {
 
 	utils.SuccessResponse(w, db_user)
 	return
+}
+
+func (c *ControllerStruct)SaveUserFcmToken(w http.ResponseWriter,r *http.Request){
+	userId,ok:=r.Context().Value("userid").(int32)
+
+	if !ok{
+		utils.ErrorResponse(w, r, http.StatusForbidden, utils.INTERNAL_SERVER_ERROR.Error())
+		return
+	}
+
+	
 }

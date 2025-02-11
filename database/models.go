@@ -15,3 +15,11 @@ type User struct {
 	Password  string
 	CreatedAt pgtype.Timestamp
 }
+
+type UserFcmToken struct {
+	ID        int32
+	UserID    int32
+	FcmToken  string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}

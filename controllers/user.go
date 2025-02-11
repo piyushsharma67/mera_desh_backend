@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"social_web_server/database"
 	"social_web_server/models"
 	"social_web_server/utils"
 	"time"
@@ -12,7 +11,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func (c *ControllerStruct)SignupUser(w http.ResponseWriter, r *http.Request) {
+func (c *ControllerStruct) SignupUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
 		return
@@ -32,22 +31,17 @@ func (c *ControllerStruct)SignupUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx,cancel:=context.WithTimeout(context.Background(),time.Second*3)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 
 	defer cancel()
 
-	createUserParams:=&database.CreateUserParams{
-		Name: user.Name,
-		Email: user.Email,
-		Password: user.Password,
-	}
+	db_user, err := c.service.InsertUserInDB(ctx, &user)
 
-	_,err:=c.service.InsertUserInDB(ctx,createUserParams)
-
-	if err!=nil{
+	if err != nil {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	
+	utils.SuccessResponse(w, db_user)
+	return
 }

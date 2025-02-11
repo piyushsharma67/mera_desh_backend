@@ -7,8 +7,17 @@ import (
 
 	"github.com/spf13/cobra"
 )
+func includes(slice []string, value string) bool {
+	for _, v := range slice {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
 
 var env string
+var envs=[]string{"local","dev","stage"}
 
 var rootCmd = &cobra.Command{
 	Use:   "social_web_app",
@@ -18,6 +27,11 @@ var rootCmd = &cobra.Command{
 		if env == "" {
 			log.Fatal("Environment flag (--env) must be specified")
 			os.Exit(1)
+		}
+		isValidEnv:=includes(envs,env)
+
+		if !isValidEnv{
+			log.Fatalf("Provide a valid env!!")
 		}
 		_, err := configPkg.Loadconfig(env)
 		if err != nil {

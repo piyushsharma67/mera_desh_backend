@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"social_web_server/database"
+	"social_web_server/models"
 	"social_web_server/utils"
 
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *ServiceStruct) InsertUserInDB(ctx context.Context, user *database.CreateUserParams) (*database.User, error) {
+func (r *ServiceStruct) InsertUserInDB(ctx context.Context, user *models.User) (*models.User, error) {
 	_, err := r.repository.GetUserByEmail(ctx, user.Email)
 
 	if err != nil {
@@ -17,14 +18,20 @@ func (r *ServiceStruct) InsertUserInDB(ctx context.Context, user *database.Creat
 		if errors.Is(err, pgx.ErrNoRows) {
 			// User does not exist, so insert the user
 
-			hashedPass,err := utils.HashPassword(user.Password)
+			hashedPass, err := utils.HashPassword(user.Password)
 
-			if err!=nil{
-				return nil,err
+			if err != nil {
+				return nil, err
 			}
 
-			user.Password=hashedPass
-			err = r.repository.InsertUserInDB(ctx, *user)
+			createUserParams := &database.CreateUserParams{
+				Name:     user.Name,
+				Email:    user.Email,
+				Password: user.Password,
+			}
+
+			createUserParams.Password = hashedPass
+			err = r.repository.InsertUserInDB(ctx, *createUserParams)
 			if err != nil {
 				return nil, err
 			}
@@ -35,7 +42,16 @@ func (r *ServiceStruct) InsertUserInDB(ctx context.Context, user *database.Creat
 				return nil, err
 			}
 
-			return &newUser, nil
+			user.ID = newUser.ID
+			token, err := utils.EncodeToken(string(user.ID))
+
+			if err != nil {
+				return nil, utils.INTERNAL_SERVER_ERROR
+			}
+
+			user.Token = token
+
+			return user, nil
 		}
 
 		// Return error if it's not a "not found" error

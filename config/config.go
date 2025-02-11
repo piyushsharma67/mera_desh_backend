@@ -36,7 +36,7 @@ func Loadconfig(env string) (*Config, error) {
 		var yamlConfig map[string]Config
 		
 		err = yaml.Unmarshal(yamlFile, &yamlConfig)
-		fmt.Println(yamlConfig["local"])
+		
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal yaml: %w", err)
 		}

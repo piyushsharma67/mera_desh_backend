@@ -21,3 +21,7 @@ func (r *RepositoryStruct)GetUserFcmById(ctx context.Context,userId int32)(datab
 func (r *RepositoryStruct)InsertUserFcmById(ctx context.Context,details database.CreateUserFcmTokenParams)(database.UserFcmToken,error){
 	return r.db.CreateUserFcmToken(ctx,details)
 }
+
+func (r *RepositoryStruct)UpdateUserFcmById(ctx context.Context,details database.UpdateUserFcmTokenParams)(error){
+	return r.db.UpdateUserFcmToken(ctx,details)
+}

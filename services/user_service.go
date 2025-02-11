@@ -49,7 +49,7 @@ func (r *ServiceStruct) InsertUserInDB(ctx context.Context, user *models.User) (
 	return nil, utils.USER_ALREADY_EXISTS
 }
 
-func (r *ServiceStruct) InsertUserFCMInDB(ctx context.Context, fcmToken string) (*database.UserFcmToken, error) {
+func (r *ServiceStruct) InsertUserFCMInDB(ctx context.Context, fcmToken string) (error) {
 
 	userId,_:=ctx.Value("userid").(int32)
 	_,err:=r.repository.GetUserFcmById(ctx,userId)
@@ -60,17 +60,29 @@ func (r *ServiceStruct) InsertUserFCMInDB(ctx context.Context, fcmToken string) 
 				FcmToken: fcmToken,
 				UserID: userId,
 			}
-			db_user,err:=r.repository.InsertUserFcmById(ctx,createUserFcmToken)
+			_,err:=r.repository.InsertUserFcmById(ctx,createUserFcmToken)
 
 			if err !=nil{
-				return nil,err
+				return err
 			}
 
-			return 
+			return nil
 		}
 	}
 
-	return nil,err
+	updateFcmToken:=database.UpdateUserFcmTokenParams{
+		UserID: userId,
+		FcmToken: fcmToken,
+	}
+
+	err=r.repository.UpdateUserFcmById(ctx,updateFcmToken)
+	
+	if err!=nil{
+		return err
+	}
+
+	return nil
+	
 
 }
 	

@@ -73,5 +73,11 @@ func (c *ControllerStruct)SaveUserFcmToken(w http.ResponseWriter,r *http.Request
 
 	ctx=context.WithValue(ctx,"userId",userId)
 
-	c.service.InsertUserFCMInDB(ctx,fcm_token.FcmToken)
+	if err:=c.service.InsertUserFCMInDB(ctx,fcm_token.FcmToken);err!=nil{
+		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	utils.SuccessResponse(w, "Saved Successfully!!")
+	return
 }

@@ -3,7 +3,9 @@ package routes
 import (
 	"fmt"
 	"net/http"
-	controllers "social_web_server/handler"
+	"social_web_server/controllers"
+	"social_web_server/services"
+
 	"time"
 
 	"github.com/gorilla/mux"
@@ -18,11 +20,14 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func InitRoutes()*mux.Router{
+func InitRoutes(service *services.ServiceStruct)*mux.Router{
 	r:=mux.NewRouter()
 	r.Use(LoggingMiddleware)
 
-	r.HandleFunc("/",controllers.Health)
-	r.HandleFunc("/signup",controllers.SignupUser).Methods("POST")
+	contoller:=controllers.ControllerStruct{}
+	c:=contoller.InitialiseController(service)
+
+	r.HandleFunc("/",c.Health)
+	r.HandleFunc("/signup",c.SignupUser).Methods("POST")
 	return r
 }

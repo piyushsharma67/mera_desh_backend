@@ -7,6 +7,7 @@ import (
 	"net/http"
 	configPkg "social_web_server/config"
 	"social_web_server/database"
+	"social_web_server/repository"
 	"social_web_server/routes"
 	"social_web_server/services"
 
@@ -34,10 +35,14 @@ var startCMD = &cobra.Command{
 		}
 
 		queries:= database.New(pgxpool)
+
+		repo:=&repository.RepositoryStruct{}
+		repository:=repo.InitialiseDB(queries)
+
 		s:=&services.ServiceStruct{}
-		
-		s.InitialiseDB(queries)
-		r := routes.InitRoutes()
+		service:=s.InitialiseService(repository)
+
+		r := routes.InitRoutes(service)
 
 		addr := fmt.Sprintf(":%s", port)
 		fmt.Printf("server running on port %s \n", port)

@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"social_web_server/models"
 	"social_web_server/utils"
@@ -46,14 +45,14 @@ func (c *ControllerStruct) SignupUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (c *ControllerStruct)SaveUserFcmToken(w http.ResponseWriter,r *http.Request){
+func (c *ControllerStruct) SaveUserFcmToken(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
 		return
 	}
 
-	userId,_:=r.Context().Value("userid").(int32)
+	userId, _ := r.Context().Value("userid").(int32)
 
 	var fcm_token models.UserFcm
 
@@ -69,12 +68,12 @@ func (c *ControllerStruct)SaveUserFcmToken(w http.ResponseWriter,r *http.Request
 		return
 	}
 
-	ctx,cancel:=context.WithTimeout(context.Background(),utils.ApiTimeoutTime)
+	ctx, cancel := context.WithTimeout(context.Background(), utils.ApiTimeoutTime)
 	defer cancel()
 
-	ctx=context.WithValue(ctx,"userId",userId)
+	ctx = context.WithValue(ctx, "userId", userId)
 
-	if err:=c.service.InsertUserFCMInDB(ctx,fcm_token.FcmToken);err!=nil{
+	if err := c.service.InsertUserFCMInDB(ctx, fcm_token.FcmToken); err != nil {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
 		return
 	}

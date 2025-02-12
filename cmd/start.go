@@ -5,17 +5,47 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	configPkg "social_web_server/config"
 	"social_web_server/database"
 	"social_web_server/repository"
 	"social_web_server/routes"
 	"social_web_server/services"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 )
 
 var port string
+
+func loadEnv() error{
+	err := godotenv.Load()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateS3Client() (*s3.Client,error) {
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
+			os.Getenv("AWS_ACCESS_KEY_ID"),
+			os.Getenv("AWS_SECRET_ACCESS_KEY"),
+			"",
+		)),
+		config.WithRegion(os.Getenv("AWS_REGION")),
+	)
+
+	if err!=nil{
+		return nil,err
+	}
+	return s3.NewFromConfig(cfg),nil
+}
 
 var startCMD = &cobra.Command{
 	Use: "start",
@@ -23,12 +53,12 @@ var startCMD = &cobra.Command{
 		if env == "" {
 			log.Fatal("ENV must be supplied")
 		}
-		config, err := configPkg.Loadconfig(env)
+		configPrj, err := configPkg.Loadconfig(env)
 
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		pgxpool, err := pgxpool.New(context.Background(), config.GetDSN())
+		pgxpool, err := pgxpool.New(context.Background(), configPrj.GetDSN())
 
 		if err != nil {
 			log.Fatal(err.Error())
@@ -38,9 +68,22 @@ var startCMD = &cobra.Command{
 
 		repo:=&repository.RepositoryStruct{}
 		repository:=repo.InitialiseDB(queries)
+	
+		err=loadEnv()
+
+		if err!=nil{
+			log.Fatal(err)
+		}
+
+		client,err := CreateS3Client()
+
+		if err!=nil{
+			log.Fatal(err)
+		}
 
 		s:=&services.ServiceStruct{}
-		service:=s.InitialiseService(repository)
+
+		service:=s.InitialiseService(repository,"mera-desh",client)
 
 		r := routes.InitRoutes(service)
 

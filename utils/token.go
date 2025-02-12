@@ -11,12 +11,12 @@ var jwtSecretKey = []byte("dgdsgdfgdfsg23452342342342") // Use a secure key in p
 
 // Claims struct represents the custom claims you want to include in the JWT
 type Claims struct {
-	UserID string `json:"user_id"`
+	UserID int32 `json:"user_id"`
 	jwt.StandardClaims
 }
 
 // EncodeToken generates a JWT token for a given userID
-func EncodeToken(userID string) (string, error) {
+func EncodeToken(userID int32) (string, error) {
 	// Define token expiration time
 	expirationTime := time.Now().Add(24 * time.Hour) // Token expires in 24 hours
 

@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"social_web_server/database"
 	"social_web_server/models"
@@ -57,7 +56,6 @@ func (c *ControllerStruct) SaveFileUrl(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
 		return
 	}
-	
 
 	var request models.FileUpload
 
@@ -72,8 +70,6 @@ func (c *ControllerStruct) SaveFileUrl(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	fmt.Println("file request is", request)
 
 	ctx, cancel := context.WithTimeout(context.Background(), utils.ApiTimeoutTime)
 

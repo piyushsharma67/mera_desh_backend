@@ -11,12 +11,13 @@ import (
 
 	"github.com/go-playground/validator/v10"
 )
-type GetPresignedUrlRequest struct{
+
+type GetPresignedUrlRequest struct {
 	FileName string `json:"file_name"`
-	FileType string `json:"file_type"` 
+	FileType string `json:"file_type"`
 }
 
-func (c *ControllerStruct)GetPresignedUrl(w http.ResponseWriter,r *http.Request){
+func (c *ControllerStruct) GetPresignedUrl(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
 		return
@@ -29,31 +30,29 @@ func (c *ControllerStruct)GetPresignedUrl(w http.ResponseWriter,r *http.Request)
 		return
 	}
 
-	
-	validate:= validator.New()
+	validate := validator.New()
 
 	if err := validate.Struct(request); err != nil {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	ctx,cancel:=context.WithTimeout(context.Background(),2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 
 	defer cancel()
 	fmt.Println(request)
-	url,err:=c.service.GetPresignedUrl(ctx,request.FileName,request.FileType,2*time.Second)
+	url, err := c.service.GetPresignedUrl(ctx, request.FileName, request.FileType, 2*time.Second)
 
-	if err!=nil{
+	if err != nil {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	utils.SuccessResponse(w,url)
+	utils.SuccessResponse(w, url)
 	return
 }
 
-
-func (c *ControllerStruct)SaveFileUrl(w http.ResponseWriter,r *http.Request){
+func (c *ControllerStruct) SaveFileUrl(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
 		return
@@ -61,17 +60,15 @@ func (c *ControllerStruct)SaveFileUrl(w http.ResponseWriter,r *http.Request){
 
 	var request models.FileUpload
 
-	validate:=validator.New()
+	validate := validator.New()
 
-	if err:=validate.Struct(request);err!=nil{
+	if err := validate.Struct(request); err != nil {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	ctx,cancel:=context.WithTimeout(context.Background(),2*time.Second)
+	_, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 
 	defer cancel()
 
-	c.service.
 }
-

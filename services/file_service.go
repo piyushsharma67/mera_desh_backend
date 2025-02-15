@@ -22,6 +22,3 @@ func (s *ServiceStruct) GetPresignedUrl(ctx context.Context, fileName string, fi
 
 	return req.URL,nil
 }
-
-
-func (s *ServiceStruct)SaveFileUrl(ctx context.Context,file_url)

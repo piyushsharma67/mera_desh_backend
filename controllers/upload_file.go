@@ -17,18 +17,19 @@ type GetPresignedUrlRequest struct{
 }
 
 func (c *ControllerStruct)GetPresignedUrl(w http.ResponseWriter,r *http.Request){
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
 		return
 	}
 
-	var request models.UploadFile
+	var request models.GetPresignedUrl
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		utils.ErrorResponse(w, r, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
+	
 	validate:= validator.New()
 
 	if err := validate.Struct(request); err != nil {
@@ -51,4 +52,26 @@ func (c *ControllerStruct)GetPresignedUrl(w http.ResponseWriter,r *http.Request)
 	return
 }
 
+
+func (c *ControllerStruct)SaveFileUrl(w http.ResponseWriter,r *http.Request){
+	if r.Method != http.MethodPost {
+		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
+		return
+	}
+
+	var request models.FileUpload
+
+	validate:=validator.New()
+
+	if err:=validate.Struct(request);err!=nil{
+		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ctx,cancel:=context.WithTimeout(context.Background(),2*time.Second)
+
+	defer cancel()
+
+	c.service.
+}
 

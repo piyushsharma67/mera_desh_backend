@@ -31,5 +31,7 @@ func InitRoutes(service *services.ServiceStruct)*mux.Router{
 	r.HandleFunc("/signup",c.SignupUser).Methods("POST")
 	r.HandleFunc("/save_fc_token",Protected(c.SaveUserFcmToken)).Methods("POST")
 	r.HandleFunc("/get_presigned_url",Protected(c.GetPresignedUrl)).Methods("POST")
+	r.HandleFunc("/save_file_in_db",Protected(c.SaveFileUrl)).Methods("POST")
+
 	return r
 }

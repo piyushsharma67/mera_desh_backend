@@ -41,15 +41,14 @@ func (c *ControllerStruct) GetPresignedUrl(w http.ResponseWriter, r *http.Reques
 	ctx, cancel := context.WithTimeout(context.Background(), utils.ApiTimeoutTime)
 
 	defer cancel()
-	fmt.Println(request)
-	url, err := c.service.GetPresignedUrl(ctx, request.FileName, request.FileType, 2*time.Second)
+	file, err := c.service.GetPresignedUrl(ctx, request.FileName, request.FileType, 2*time.Second)
 
 	if err != nil {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	utils.SuccessResponse(w, url)
+	utils.SuccessResponse(w, file)
 	return
 }
 
@@ -58,8 +57,14 @@ func (c *ControllerStruct) SaveFileUrl(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
 		return
 	}
+	
 
 	var request models.FileUpload
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		utils.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	validate := validator.New()
 
@@ -67,6 +72,8 @@ func (c *ControllerStruct) SaveFileUrl(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	fmt.Println("file request is", request)
 
 	ctx, cancel := context.WithTimeout(context.Background(), utils.ApiTimeoutTime)
 

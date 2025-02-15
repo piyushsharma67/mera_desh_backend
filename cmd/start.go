@@ -76,6 +76,7 @@ var startCMD = &cobra.Command{
 		}
 
 		client,err := CreateS3Client()
+		presigner := s3.NewPresignClient(client)
 
 		if err!=nil{
 			log.Fatal(err)
@@ -83,7 +84,7 @@ var startCMD = &cobra.Command{
 
 		s:=&services.ServiceStruct{}
 
-		service:=s.InitialiseService(repository,"mera-desh",client)
+		service:=s.InitialiseService(repository,"mera-desh",client,presigner)
 
 		r := routes.InitRoutes(service)
 

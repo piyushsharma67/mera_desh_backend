@@ -2,4 +2,4 @@ package utils
 
 import "time"
 
-var ApiTimeoutTime = time.Second* 3
+var ApiTimeoutTime = time.Millisecond* 500

@@ -6,6 +6,6 @@ type GetPresignedUrl struct{
 }
 
 type FileUpload struct{
-	file_url string `json:"file_url`
+	FileUrl string `json:"file_url`
 }
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"social_web_server/database"
 	"social_web_server/models"
 	"social_web_server/utils"
 	"time"
@@ -37,7 +38,7 @@ func (c *ControllerStruct) GetPresignedUrl(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), utils.ApiTimeoutTime)
 
 	defer cancel()
 	fmt.Println(request)
@@ -67,8 +68,20 @@ func (c *ControllerStruct) SaveFileUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), utils.ApiTimeoutTime)
 
 	defer cancel()
 
+	err := c.service.SaveFileUrl(ctx, &database.CreateUploadedFileParams{
+		UserID:  r.Context().Value("userid").(int32),
+		FileUrl: request.FileUrl,
+	})
+
+	if err != nil {
+		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	utils.SuccessResponse(w, nil)
+	return
 }

@@ -8,6 +8,14 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type UploadedFile struct {
+	ID        int32
+	UserID    int32
+	FileUrl   string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
 type User struct {
 	ID        int32
 	Name      string

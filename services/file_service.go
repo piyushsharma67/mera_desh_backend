@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"social_web_server/database"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -21,4 +22,14 @@ func (s *ServiceStruct) GetPresignedUrl(ctx context.Context, fileName string, fi
 	}
 
 	return req.URL,nil
+}
+
+func (s *ServiceStruct)SaveFileUrl(ctx context.Context,params *database.CreateUploadedFileParams)error{
+	if err:=s.repository.InsertUploadedFile(ctx,*params);err!=nil{
+		return err
+	}
+
+	return nil
+
+	
 }

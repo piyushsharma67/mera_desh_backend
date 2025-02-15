@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"social_web_server/models"
 	"social_web_server/utils"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -80,4 +81,43 @@ func (c *ControllerStruct) SaveUserFcmToken(w http.ResponseWriter, r *http.Reque
 
 	utils.SuccessResponse(w, "Saved Successfully!!")
 	return
+}
+
+func (c *ControllerStruct) GetAllUserFiles(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodGet {
+		utils.ErrorResponse(w, r, http.StatusBadRequest, "Bad Request")
+		return
+	}
+
+	limitStr:=r.URL.Query().Get("limit")
+	offsetStr:=r.URL.Query().Get("offset")
+
+	limit, err := strconv.Atoi(limitStr)
+    if err != nil {
+        limit = 10 // Default limit
+    }
+
+    offset, err := strconv.Atoi(offsetStr)
+    if err != nil {
+        offset = 0 // Default offset
+    }
+
+    // Convert to int32
+    limitInt32 := int32(limit)
+    offsetInt32 := int32(offset)
+
+	userId, _ := r.Context().Value("userid").(int32)
+
+	ctx, cancel := context.WithTimeout(context.Background(), utils.ApiTimeoutTime)
+	defer cancel()
+
+	files,err:=c.service.GetAllFilesOfUser(ctx,userId,limitInt32,offsetInt32)
+
+	if err!=nil{
+		utils.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	utils.SuccessResponse(w,files)
 }

@@ -7,6 +7,8 @@ package database
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :exec
@@ -29,6 +31,54 @@ type CreateUserParams struct {
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	_, err := q.db.Exec(ctx, createUser, arg.Name, arg.Email, arg.Password)
 	return err
+}
+
+const getUserAllPhotos = `-- name: GetUserAllPhotos :many
+SELECT id, user_id, file_url, created_at
+FROM uploaded_files
+WHERE user_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetUserAllPhotosParams struct {
+	UserID int32
+	Limit  int32
+	Offset int32
+}
+
+type GetUserAllPhotosRow struct {
+	ID        int32
+	UserID    int32
+	FileUrl   string
+	CreatedAt pgtype.Timestamp
+}
+
+// params: UserID
+// returns: UploadedFile
+func (q *Queries) GetUserAllPhotos(ctx context.Context, arg GetUserAllPhotosParams) ([]GetUserAllPhotosRow, error) {
+	rows, err := q.db.Query(ctx, getUserAllPhotos, arg.UserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserAllPhotosRow
+	for rows.Next() {
+		var i GetUserAllPhotosRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.FileUrl,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one

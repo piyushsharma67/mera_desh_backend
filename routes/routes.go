@@ -28,10 +28,10 @@ func InitRoutes(service *services.ServiceStruct)*mux.Router{
 	c:=contoller.InitialiseController(service)
 
 	r.HandleFunc("/",c.Health)
-	r.HandleFunc("/signup",c.SignupUser).Methods("POST")
-	r.HandleFunc("/save_fc_token",Protected(c.SaveUserFcmToken)).Methods("POST")
-	r.HandleFunc("/get_presigned_url",Protected(c.GetPresignedUrl)).Methods("POST")
-	r.HandleFunc("/save_file_in_db",Protected(c.SaveFileUrl)).Methods("POST")
-
+	r.HandleFunc("/v1/signup",c.SignupUser).Methods("POST")
+	r.HandleFunc("/v1/save_fc_token",Protected(c.SaveUserFcmToken)).Methods("POST")
+	r.HandleFunc("/v1/get_presigned_url",Protected(c.GetPresignedUrl)).Methods("POST")
+	r.HandleFunc("/v1/save_file_in_db",Protected(c.SaveFileUrl)).Methods("POST")
+	r.HandleFunc("/v1/get_all_user_files",Protected(c.GetAllUserFiles)).Methods("GET")
 	return r
 }

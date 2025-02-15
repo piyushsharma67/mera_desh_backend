@@ -25,3 +25,11 @@ func (r *RepositoryStruct)InsertUserFcmById(ctx context.Context,details database
 func (r *RepositoryStruct)UpdateUserFcmById(ctx context.Context,details database.UpdateUserFcmTokenParams)(error){
 	return r.db.UpdateUserFcmToken(ctx,details)
 }
+
+func (r *RepositoryStruct)GetAllUserUploadedFiles(ctx context.Context,userId int32,limit int32,offset int32)([]database.GetUserAllPhotosRow, error){
+	return r.db.GetUserAllPhotos(ctx,database.GetUserAllPhotosParams{
+		UserID: userId,
+		Limit: limit,
+		Offset: limit,
+	})
+}

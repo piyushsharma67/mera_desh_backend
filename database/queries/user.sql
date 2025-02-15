@@ -15,3 +15,12 @@ RETURNING id, name, email, password, created_at;
 SELECT id, name, email, password, created_at
 FROM users
 WHERE email = $1;
+
+-- name: GetUserAllPhotos :many
+-- params: UserID
+-- returns: UploadedFile
+SELECT id, user_id, file_url, created_at
+FROM uploaded_files
+WHERE user_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3;

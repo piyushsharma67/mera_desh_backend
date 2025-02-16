@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"errors"
-	"fmt"
 	"social_web_server/database"
 	"social_web_server/models"
 	"social_web_server/utils"
@@ -86,7 +85,6 @@ func (r *ServiceStruct) InsertUserFCMInDB(ctx context.Context, fcmToken string) 
 
 }
 
-func (r *ServiceStruct) GetAllFilesOfUser(ctx context.Context,userId int32,limit int32,offset int32)([]database.GetUserAllPhotosRow, error){
-	fmt.Println(userId)
-	return r.repository.GetAllUserUploadedFiles(ctx,userId,limit,offset)
+func (r *ServiceStruct) GetAllFilesOfUser(ctx context.Context, userId int32, limit int32, offset int32) ([]database.GetUserAllPhotosRow, error) {
+	return r.repository.GetAllUserUploadedFiles(ctx, userId, limit, offset)
 }

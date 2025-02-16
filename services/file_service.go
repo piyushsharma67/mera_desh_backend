@@ -26,7 +26,7 @@ func (s *ServiceStruct) GetPresignedUrl(ctx context.Context, fileName string, fi
 		return nil, fmt.Errorf("failed to generate pre-signed URL: %w", err)
 	}
 
-	return &TFileUrl{PresignedUrl: req.URL, FileUrl: fmt.Sprintf("https://%s.s3.amazonaws.com/%s", s.Bucket, fileName)}, nil
+	return &TFileUrl{PresignedUrl: req.URL, FileUrl: fmt.Sprintf("https://%s.s3.amazonaws.com/%s.%s", s.Bucket, fileName,fileType)}, nil
 }
 
 func (s *ServiceStruct) SaveFileUrl(ctx context.Context, params *database.CreateUploadedFileParams) error {

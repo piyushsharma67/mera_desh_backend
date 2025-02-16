@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"social_web_server/models"
 	"social_web_server/utils"
@@ -106,6 +107,8 @@ func (c *ControllerStruct) GetAllUserFiles(w http.ResponseWriter, r *http.Reques
     // Convert to int32
     limitInt32 := int32(limit)
     offsetInt32 := int32(offset)
+
+	fmt.Println(limitInt32,offsetInt32)
 
 	userId, _ := r.Context().Value("userid").(int32)
 

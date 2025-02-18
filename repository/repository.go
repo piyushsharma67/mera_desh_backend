@@ -18,10 +18,9 @@ func InitialiseRepositories(dbType enums.DBType,postgresDB *database.Queries,mon
 
 	switch dbType{
 
-	case enums.Mongo:
+	case enums.Postgres:
 		userRepo=NewPostgresUserRepository(postgresDB)
 		fileUpload=NewPostgresFileRepository(postgresDB)
-	
 	}
 
 	return &Repositories{

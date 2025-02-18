@@ -30,7 +30,7 @@ func (s *ServiceStruct) GetPresignedUrl(ctx context.Context, fileName string, fi
 }
 
 func (s *ServiceStruct) SaveFileUrl(ctx context.Context, params *database.CreateUploadedFileParams) error {
-	if err := s.repository.InsertUploadedFile(ctx, *params); err != nil {
+	if err := s.Repository.FileUploadRepo.InsertUploadedFile(ctx, *params); err != nil {
 		return err
 	}
 

@@ -6,12 +6,11 @@ import (
 	"social_web_server/database"
 	"social_web_server/models"
 	"social_web_server/utils"
-
 	"github.com/jackc/pgx/v5"
 )
 
 func (r *ServiceStruct) InsertUserInDB(ctx context.Context, user *models.User) (*models.User, error) {
-	_, err := r.repository.GetUserByEmail(ctx, user.Email)
+	_, err := r.Repository.UserRepo.GetUserByEmail(ctx, user.Email)
 	if err != nil {
 		// Check if error is "record not found"
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -26,12 +25,12 @@ func (r *ServiceStruct) InsertUserInDB(ctx context.Context, user *models.User) (
 				Password: user.Password,
 			}
 			createUserParams.Password = hashedPass
-			err = r.repository.InsertUserInDB(ctx, *createUserParams)
+			err = r.Repository.UserRepo.InsertUserInDB(ctx, *createUserParams)
 			if err != nil {
 				return nil, err
 			}
 			// Fetch newly created user
-			newUser, err := r.repository.GetUserByEmail(ctx, user.Email)
+			newUser, err := r.Repository.UserRepo.GetUserByEmail(ctx, user.Email)
 			if err != nil {
 				return nil, err
 			}
@@ -52,7 +51,7 @@ func (r *ServiceStruct) InsertUserInDB(ctx context.Context, user *models.User) (
 func (r *ServiceStruct) InsertUserFCMInDB(ctx context.Context, fcmToken string) error {
 
 	userId, _ := ctx.Value("userId").(int32)
-	_, err := r.repository.GetUserFcmById(ctx, userId)
+	_, err := r.Repository.UserRepo.GetUserFcmById(ctx, userId)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -60,7 +59,7 @@ func (r *ServiceStruct) InsertUserFCMInDB(ctx context.Context, fcmToken string) 
 				FcmToken: fcmToken,
 				UserID:   userId,
 			}
-			_, err := r.repository.InsertUserFcmById(ctx, createUserFcmToken)
+			_, err := r.Repository.UserRepo.InsertUserFcmById(ctx, createUserFcmToken)
 
 			if err != nil {
 				return err
@@ -75,7 +74,7 @@ func (r *ServiceStruct) InsertUserFCMInDB(ctx context.Context, fcmToken string) 
 		FcmToken: fcmToken,
 	}
 
-	err = r.repository.UpdateUserFcmById(ctx, updateFcmToken)
+	err = r.Repository.UserRepo.UpdateUserFcmById(ctx, updateFcmToken)
 
 	if err != nil {
 		return err
@@ -85,6 +84,6 @@ func (r *ServiceStruct) InsertUserFCMInDB(ctx context.Context, fcmToken string) 
 
 }
 
-func (r *ServiceStruct) GetAllFilesOfUser(ctx context.Context, userId int32, limit int32, offset int32) ([]database.GetUserAllPhotosRow, error) {
-	return r.repository.GetAllUserUploadedFiles(ctx, userId, limit, offset)
+func (r *ServiceStruct) GetAllFilesOfUser(ctx context.Context, userId int32, limit int32, offset int32) ([]models.GetUserAllPhotosRow, error) {
+	return r.Repository.FileUploadRepo.GetAllFilesOfUser(ctx, userId, limit, offset)
 }

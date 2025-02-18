@@ -1,13 +1,31 @@
 package repository
 
-import "social_web_server/database"
+import (
+	"social_web_server/database"
+	"social_web_server/enums"
 
-type RepositoryStruct struct{
-	db *database.Queries
+	"go.mongodb.org/mongo-driver/mongo"
+)
+
+type Repositories struct{
+	UserRepo UserRepository
+	FileUploadRepo FileUploadRepository
 }
 
-func (s *RepositoryStruct)InitialiseDB(queries *database.Queries)*RepositoryStruct{
-	s.db = queries
+func InitialiseRepositories(dbType enums.DBType,postgresDB *database.Queries,mongoClient *mongo.Client)*Repositories{
+	var userRepo UserRepository
+	var fileUpload FileUploadRepository
 
-	return s
+	switch dbType{
+
+	case enums.Mongo:
+		userRepo=NewPostgresUserRepository(postgresDB)
+		fileUpload=NewPostgresFileRepository(postgresDB)
+	
+	}
+
+	return &Repositories{
+		UserRepo: userRepo,
+		FileUploadRepo: fileUpload,
+	}
 }

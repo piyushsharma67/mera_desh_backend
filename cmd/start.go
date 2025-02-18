@@ -8,6 +8,7 @@ import (
 	"os"
 	configPkg "social_web_server/config"
 	"social_web_server/database"
+	"social_web_server/enums"
 	"social_web_server/repository"
 	"social_web_server/routes"
 	"social_web_server/services"
@@ -58,17 +59,16 @@ var startCMD = &cobra.Command{
 		if err != nil {
 			log.Fatal(err.Error())
 		}
+		var repo repository.Repositories
 		pgxpool, err := pgxpool.New(context.Background(), configPrj.GetDSN())
 
 		if err != nil {
 			log.Fatal(err.Error())
+		}else{
+			queries:= database.New(pgxpool)
+			repo=*repository.InitialiseRepositories(enums.Postgres,queries,nil)
 		}
 
-		queries:= database.New(pgxpool)
-
-		repo:=&repository.RepositoryStruct{}
-		repository:=repo.InitialiseDB(queries)
-	
 		err=loadEnv()
 
 		if err!=nil{
@@ -84,7 +84,7 @@ var startCMD = &cobra.Command{
 
 		s:=&services.ServiceStruct{}
 
-		service:=s.InitialiseService(repository,"mera-desh",client,presigner)
+		service:=s.InitialiseService(repo,"mera-desh",client,presigner)
 
 		r := routes.InitRoutes(service)
 

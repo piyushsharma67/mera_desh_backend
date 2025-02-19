@@ -7,13 +7,13 @@ import (
 )
 
 type ServiceStruct struct {
-	Repository repository.Repositories
+	Repository *repository.Repositories
 	Bucket     string
 	S3Client   *s3.Client
 	Presigner *s3.PresignClient
 }
 
-func (s *ServiceStruct) InitialiseService(r repository.Repositories, Bucket string, s3Client *s3.Client,presigner *s3.PresignClient) *ServiceStruct {
+func (s *ServiceStruct) InitialiseService(r *repository.Repositories, Bucket string, s3Client *s3.Client,presigner *s3.PresignClient) *ServiceStruct {
 	s.Repository = r
 	s.Bucket = Bucket
 	s.S3Client = s3Client

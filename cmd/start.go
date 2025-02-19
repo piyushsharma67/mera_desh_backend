@@ -59,14 +59,19 @@ var startCMD = &cobra.Command{
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		var repo repository.Repositories
+		var repoInstance *repository.Repositories
 		pgxpool, err := pgxpool.New(context.Background(), configPrj.GetDSN())
 
 		if err != nil {
 			log.Fatal(err.Error())
 		}else{
-			queries:= database.New(pgxpool)
-			repo=*repository.InitialiseRepositories(enums.Postgres,queries,nil)
+			database.New(pgxpool)
+			repo,err:=repository.InitialiseRepositories(enums.Postgres,nil,nil)
+
+			if err!=nil{
+				log.Fatal(err)
+			}
+			repoInstance=repo
 		}
 
 		err=loadEnv()
@@ -84,7 +89,7 @@ var startCMD = &cobra.Command{
 
 		s:=&services.ServiceStruct{}
 
-		service:=s.InitialiseService(repo,"mera-desh",client,presigner)
+		service:=s.InitialiseService(repoInstance,"mera-desh",client,presigner)
 
 		r := routes.InitRoutes(service)
 
